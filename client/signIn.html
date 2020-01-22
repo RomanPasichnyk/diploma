@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema</title>
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="public/css/navbar_footer.css" rel="stylesheet">
+    <link href="public/css/films.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a href="#" class="navbar-brand">Cinema</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+            <ul class="navbar-nav mr-auto" id="head">
+                <li class="nav-item">
+                    <a href="films.html" class="nav-link">Films</a>
+                </li>
+                <li class="nav-item">
+                    <a href="sessions.html" class="nav-link">Sessions</a>
+                </li>
+                <li class="nav-item">
+                    <a href="contactUs.html" class="nav-link">Contact Us</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <ul class="navbar-nav my-2 my-sm-0">
+                    <li class="nav-item">
+                        <a href="reg.html" class="nav-link">Sign Up</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="signIn.html" class="nav-link">Sign In</a>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </nav>
+
+
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-4 well well-sm mx-auto">
+                    <legend><a href="http://www.jquery2dotnet.com"><i class="glyphicon glyphicon-globe"></i></a> Sign in!</legend><br>
+                    <form action="#" method="post" class="form" role="form" id="signInForm">
+
+                        <input class="form-control" id="userEmail" placeholder="Your Email" type="email" /><br>
+                        <input class="form-control" id="userPassword" placeholder="Your Password" type="password" /><br>
+
+                        <br>
+                        <br>
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">
+                            Sign in</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!--footer starts from here-->
+    <footer class="footer">
+        <div class="container">
+            <ul class="foote_bottom_ul_amrc">
+                <br>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="http://kalarikendramdelhi.com">About</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Services</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Pricing</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Blog</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Contact</a></li>
+            </ul>
+            <!--foote_bottom_ul_amrc ends here-->
+            <p class="text-center">Copyright @2018 | Designed With by <a href="#">Roman Pasichnyk</a></p>
+
+            <ul class="social_footer_ul">
+                <li><a href="http://facebook.com"><i class="fa fa-facebook-f"></i></a></li>
+                <li><a href="http://twitter.com"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="http://linkedin.com"><i class="fa fa-linkedin"></i></a></li>
+                <li><a href="http://instagram.com"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+
+
+    <script src=public/js/jquery.min.js> </script> <script src="public/js/bootstrap.min.js"></script>
+
+    <script>
+        let serverURL = 'http://localhost:8080/';
+        $(document).ready(function() {
+
+            let token = window.localStorage.getItem('auth_token');
+            if (!token) {
+
+
+
+
+                $.ajaxSetup({
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+
+
+                $("#signInForm").submit(function(e) {
+                    e.preventDefault();
+                    signin();
+                });
+            } else {
+                window.location.href = "films.html";
+            }
+        });
+
+        function signin() {
+            let userEmail = $("#userEmail").val();
+            let userPassword = $("#userPassword").val();
+
+            let user = {
+                email: userEmail,
+                password: userPassword
+            }
+
+            $.ajax({
+                url: serverURL + "auth/signin",
+                method: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(user),
+                complete: function(data) {
+                    console.log(data);
+                    if (data.status == 200) {
+                        let token = data.responseJSON.token;
+                        window.localStorage.setItem('auth_token', token);
+
+                        let role = parseJwt(token).auth;
+
+                        if (role === 'ROLE_USER') {
+                            alert('Your role : ' + role);
+                            // window.location.href = 'user.html';
+                        } else if (role === 'ROLE_ADMIN') {
+                            // window.location.href = 'admin.html';
+                            alert('Your role : ' + role);
+                        }
+                        window.location.href = 'films.html';
+
+
+                    }
+                }
+            })
+        }
+
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse(window.atob(base64));
+        }
+
+        /*function base() {
+            $('#sign').append(
+                `
+                <form class="form-inline my-2 my-lg-0">
+                <ul class="navbar-nav my-2 my-sm-0">
+                    <li class="nav-item">
+                    <a href="reg.html" class="nav-link">Sign Up</a>
+                </li>
+                <li class="nav-item active">
+                    <a href="signIn.html" class="nav-link">Sign In</a>
+                </li>
+                </ul>
+                </form>
+
+                
+                
+                `
+            )
+        };
+        /*<li class="nav-item">
+                    <a href="reg.html" class="nav-link">Sign Up</a>
+                </li>
+                <li class="nav-item active">
+                    <a href="signIn.html" class="nav-link">Sign In</a>
+                </li>*/
+
+    </script>
+
+</body>
+
+</html>

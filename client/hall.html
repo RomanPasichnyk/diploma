@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema</title>
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="public/css/navbar_footer.css" rel="stylesheet">
+    <link href="public/css/films.css" rel="stylesheet">
+    <link href="public/css/hall.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a href="#" class="navbar-brand">Cinema</a>
+        <button class="navbar-toggler" type="button" data-target="#navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav" id="head">
+                <li class="nav-item">
+                    <a href="films.html" class="nav-link">Films</a>
+                </li>
+                <li class="nav-item active">
+                    <a href="sessions.html" class="nav-link">Sessions</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Contact Us</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav offset-md-9">
+                <li class="nav-item">
+                    <a href="signIn.html" class="nav-link" id="logoutBtn">Log Out</a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+
+    <section>
+
+        <div class="container">
+            <div class="row" id="films">
+                <h1 class="text-center"><span id="filmNameHead"></span></h1>
+
+            </div>
+        </div>
+
+        <div class='result'></div>
+        <button class="btn btn-sm btn-success mx-auto" id="btn" type="submit">Buy</button>
+        <div class='cinemaHall zal1'></div>
+
+
+    </section>
+
+    <!--footer starts from here-->
+    <footer class="footer">
+        <div class="container">
+            <ul class="foote_bottom_ul_amrc">
+                <br>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="http://kalarikendramdelhi.com">About</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Services</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Pricing</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Blog</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Contact</a></li>
+            </ul>
+            <!--foote_bottom_ul_amrc ends here-->
+            <p class="text-center">Copyright @2018 | Designed With by <a href="#">Roman Pasichnyk</a></p>
+
+            <ul class="social_footer_ul">
+                <li><a href="http://facebook.com"><i class="fa fa-facebook-f"></i></a></li>
+                <li><a href="http://twitter.com"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="http://linkedin.com"><i class="fa fa-linkedin"></i></a></li>
+                <li><a href="http://instagram.com"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+
+
+    <script src=public/js/jquery.min.js> </script> <script src="public/js/bootstrap.min.js"></script>
+
+    <script>
+        let serverURL = 'http://localhost:8080/';
+        var mass = [];
+        $(document).ready(function() {
+            
+
+            let token = window.localStorage.getItem('auth_token');
+            if (token) {
+                let role = parseJwt(token).auth;
+                if (role === 'ROLE_ADMIN') {
+                    $('#head').append(
+                        `
+                        <li class="nav-item active">
+                            <a href="editFilms.html" class="nav-link">AdminPanel</a>
+                        </li>
+                        `
+                    )
+                };
+                $.ajaxSetup({
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                getSession();
+                console.log(window.location.search);
+                
+                
+
+                $(".btn").click(function(e) {
+                    e.preventDefault();
+                    console.log(mass);
+                });
+            } else {
+                window.location.href = "signIn.html";
+            }
+
+        });
+
+        var cinemaHall1 = {
+                row: [10, 20, 30, 30, 30, 30, 30, 30, 30, 30, 30]
+            },
+            cinemaHallMap = ' ';
+        j = 0;
+        $.each(cinemaHall1.row, function(row, numberOfSeats) {
+            cinemaHallRow = ' ';
+            j += 1;
+            for (i = 1; i <= numberOfSeats; i++) {
+
+                cinemaHallRow += '<div class="seat" data-row="' + j + '"data-seat="' + i + '"> &nbsp;' + i + ' </div>';
+
+            }
+
+            cinemaHallMap += j + cinemaHallRow + '<div class="passageBetween">&nbsp;</div>';
+        });
+
+        $('.zal1').html(cinemaHallMap);
+        $('.seat').on('click', function(e) {
+            $(e.currentTarget).toggleClass('bay');
+            showBaySeat();
+        });
+
+        function showBaySeat() {
+            result = '';
+            mass = [];
+            i = 0;
+            $.each($('.seat.bay'), function(key, item) {
+                mass[i] = [$(item).data().row, $(item).data().seat];
+                i++;
+                result += '<div class="ticket">Ряд: ' +
+                    $(item).data().row + ' | Місце: ' +
+                    $(item).data().seat + '</div>';
+            });
+
+            $('.result').html(result);
+
+        }
+
+        function getSession() {
+            $.ajax({
+                url: serverURL + "sessions/find" + window.location.search,
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                    $('#filmNameHead').append(
+                        `
+                            ${response.film.filmName}
+                        `
+                    )
+
+                }
+            });
+        }
+        
+
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse(window.atob(base64));
+        }
+
+    </script>
+
+</body>
+
+</html>

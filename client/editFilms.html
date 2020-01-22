@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema</title>
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="public/css/navbar_footer.css" rel="stylesheet">
+    <link href="public/css/films.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a href="#" class="navbar-brand">Cinema | Admin</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="films.html" class="nav-link">Cinema</a>
+                </li>
+                <li class="nav-item active">
+                    <a href="editFilms.html" class="nav-link">Films</a>
+                </li>
+                <li class="nav-item">
+                    <a href="editSessions.html" class="nav-link">Sessions</a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+
+
+    <section>
+        <div class="container">
+            <div class="row" id="films">
+                <h1 class="text-center"><span>Films editor</span></h1>
+
+                <a href="addFilm.html"><button class="btn btn-success" id="btn-add">Add Film</button></a>
+
+                <table class="table table-striped" id="filmsTable">
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Film</th>
+                            <th>Start Rental</th>
+                            <th>End Rental</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!--footer starts from here-->
+    <footer class="footer">
+        <div class="container">
+            <ul class="foote_bottom_ul_amrc">
+                <br>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="http://kalarikendramdelhi.com">About</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Services</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Pricing</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Blog</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Contact</a></li>
+            </ul>
+            <!--foote_bottom_ul_amrc ends here-->
+            <p class="text-center">Copyright @2018 | Designed With by <a href="#">Roman Pasichnyk</a></p>
+
+            <ul class="social_footer_ul">
+                <li><a href="http://facebook.com"><i class="fa fa-facebook-f"></i></a></li>
+                <li><a href="http://twitter.com"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="http://linkedin.com"><i class="fa fa-linkedin"></i></a></li>
+                <li><a href="http://instagram.com"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+
+
+    <script src=public/js/jquery.min.js> </script> <script src="public/js/bootstrap.min.js"></script>
+
+    <script>
+        let serverURL = 'http://localhost:8080/';
+        $(document).ready(function() {
+
+            let token = window.localStorage.getItem('auth_token');
+            if (token) {
+
+                $.ajaxSetup({
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                
+                let role = parseJwt(token).auth;
+
+                if (role === 'ROLE_USER') {
+                    window.location.href = "signIn.html";
+                };
+
+                getFilms();
+
+                $(document).on('click', '#filmsTable tbody button', function(e) {
+                    console.log(e.target.id);
+
+                    let filmId = e.target.id.split('-')[2];
+                    let ans = e.target.id.split('-')[1];
+                    if (ans == "delete") {
+                        var r = confirm("Ви дійсно хочете видалити цей запис?");
+                        if (r == true) {
+                            deleteFilm(filmId);
+                        }
+                    } else {
+                        var r = confirm("Ви дійсно хочете редагувати цей запис?");
+                        if (r == true) {
+                            alert("Success");
+                        }
+                    }
+
+
+                });
+            } else {
+                window.location.href = "signIn.html";
+            }
+
+        });
+
+
+        function getFilms() {
+            $.ajax({
+                url: serverURL + "films",
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                    $.each(response, function(key, value) {
+                        $('#filmsTable tbody').append(
+                            `
+                            <tr>
+                                <td>${value.id}</td>
+                                <td>${value.filmName}</td>
+                                <td>${value.startRental}</td>
+                                <td>${value.startRental}</td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" id="btn-delete-${value.id}">Delete</button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" id="btn-edit-${value.id}">Edit</button>
+                                </td>
+                            </tr>
+                        `
+                        )
+                    });
+                }
+            });
+        }
+
+        function deleteFilm(filmId) {
+            $.ajax({
+                url: serverURL + 'films/' + filmId,
+                method: 'DELETE',
+                dataType: 'json',
+                contentType: 'application/json',
+                complete: function(res) {
+                    if (res.status == 200) {
+                        $('#filmsTable tbody').empty();
+                        getFilms();
+                    }
+                }
+            })
+        }
+
+        function editFilm(filmId) {
+            $.ajax({
+                url: serverURL + 'films/' + filmId,
+                method: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                complete: function(res) {
+                    if (res.status == 200) {
+                        $('#filmsTable tbody').empty();
+                        getFilms();
+                    }
+                }
+            })
+        }
+
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse(window.atob(base64));
+        }
+
+    </script>
+
+</body>
+
+</html>

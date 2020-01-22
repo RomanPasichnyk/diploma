@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema</title>
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="public/css/navbar_footer.css" rel="stylesheet">
+    <link href="public/css/films.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a href="#" class="navbar-brand">Cinema | Admin</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="films.html" class="nav-link">Cinema</a>
+                </li>
+                <li class="nav-item active">
+                    <a href="editFilms.html" class="nav-link">Films</a>
+                </li>
+                <li class="nav-item">
+                    <a href="editSessions.html" class="nav-link">Sessions</a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+
+
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-4 well well-sm mx-auto">
+                    <legend><a href="http://www.jquery2dotnet.com"><i class="glyphicon glyphicon-globe"></i></a> Add Film</legend><br>
+                    <form action="#" method="post" class="form" role="form" id="addFilmForm">
+
+                        <input class="form-control" id="filmName" placeholder="Film Name" type="text" /><br>
+                        <input class="form-control" id="filmOriginalName" placeholder="Original Name" type="text" /><br>
+                        <input class="form-control" id="filmLanguage" placeholder="Language" type="text" /><br>
+                        <input class="form-control" id="filmDuration" placeholder="Duration" type="number" /><br>
+                        <input class="form-control" id="linkTrailer" placeholder="Link Trailer" type="text" /><br>
+                        <label>Date of the release the Film</label>
+                        <input class="form-control" id="releaseFilm" type="date" /><br>
+                        <label>Date of the start rental</label>
+                        <input class="form-control" id="startRental" type="date" /><br>
+                        <label>Date of the end rental</label>
+                        <input class="form-control" id="endRental" type="date" /><br>
+                        <label>Image</label>
+                        <input type="file" class="form-control" id="image">
+
+
+                        <br><br>
+                        <label>Favorite genre</label>
+                        <div>
+                            <select class="form-control" id="filmGenre" size="14" multiple>
+                                <option value="COMEDY">Comedy</option>
+                                <option value="HORROR">Horror</option>
+                                <option value="ROMANCE">Romance</option>
+                                <option value="ACTION">Action</option>
+                                <option value="THRILLER">Thriller</option>
+                                <option value="DRAMA">Drama</option>
+                                <option value="MYSTERY">Mystery</option>
+                                <option value="CRIME">Crime</option>
+                                <option value="ANIMATION">Animation</option>
+                                <option value="ADVENTURE">Adventure</option>
+                                <option value="FANTASY">Fantasy</option>
+                                <option value="COMEDYROMANCE">Comedy-Romance</option>
+                                <option value="ACTIONCOMEDY">Action-Comedy</option>
+                                <option value="SUPERHERO">Superhero</option>
+                            </select>
+                        </div>
+
+
+                        <br>
+                        <br>
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">
+                            Add Film</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!--footer starts from here-->
+    <footer class="footer">
+        <div class="container">
+            <ul class="foote_bottom_ul_amrc">
+                <br>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="http://kalarikendramdelhi.com">About</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Services</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Pricing</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Blog</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Contact</a></li>
+            </ul>
+            <!--foote_bottom_ul_amrc ends here-->
+            <p class="text-center">Copyright @2018 | Designed With by <a href="#">Roman Pasichnyk</a></p>
+
+            <ul class="social_footer_ul">
+                <li><a href="http://facebook.com"><i class="fa fa-facebook-f"></i></a></li>
+                <li><a href="http://twitter.com"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="http://linkedin.com"><i class="fa fa-linkedin"></i></a></li>
+                <li><a href="http://instagram.com"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+
+
+    <script src=public/js/jquery.min.js> </script> <script src="public/js/bootstrap.min.js"></script>
+
+    <script>
+        let serverURL = 'http://localhost:8080/';
+        let filmName = "";
+        $(document).ready(function() {
+
+            let token = window.localStorage.getItem('auth_token');
+            if (token) {
+
+                $.ajaxSetup({
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                
+                let role = parseJwt(token).auth;
+
+                if (role === 'ROLE_USER') {
+                    window.location.href = "signIn.html";
+                };
+
+                $("#addFilmForm").submit(function(e) {
+                    e.preventDefault();
+
+                    setTimeout("filmName = addFilm()", 100);
+                    setTimeout("console.log('met - ' + filmName)", 350);
+                    setTimeout("findByName(filmName)", 600);
+                });
+            }
+
+        });
+
+        function addFilm() {
+            let filmName = $("#filmName").val();
+            let filmOriginalName = $("#filmOriginalName").val();
+            let filmLanguage = $("#filmLanguage").val();
+            let filmDuration = $("#filmDuration").val();
+            let filmlinkTrailer = $("#linkTrailer").val();
+            let releaseFilm = $("#releaseFilm").val();
+            let startRental = $("#startRental").val();
+            let endRental = $("#endRental").val();
+            let filmGenre = $("#filmGenre").val();
+            let image = $('#image')[0].files[0].name;
+
+            let film = {
+                filmName: filmName,
+                originalName: filmOriginalName,
+                language: filmLanguage,
+                duration: filmDuration,
+                linkTrailer: filmlinkTrailer,
+                releaseFilm: releaseFilm,
+                startRental: startRental,
+                endRental: endRental,
+                genre: filmGenre,
+                image: image
+            };
+            console.log(film);
+
+            $.ajax({
+                url: serverURL + "films",
+                method: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(film),
+                complete: function(data) {
+                    if (data.status == 201) {
+                        alert('film added');
+                    }
+                }
+            })
+            return filmName;
+        }
+
+
+        function getFilmById(filmId) {
+            $.ajax({
+                url: serverURL + "films",
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                }
+            });
+        }
+
+        function uploadFile(filmId) {
+            let formData = new FormData();
+            formData.append('file', $('#image')[0].files[0]);
+            console.log($('#image')[0].files[0].name);
+            $.ajax({
+                url: serverURL + 'films/' + filmId + '/image',
+                method: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                complete: function(res) {
+                    alert("Image added");
+                }
+            })
+
+        }
+
+        function findByName(filmName) {
+            $.ajax({
+                url: serverURL + 'films/find?filmName=' + filmName,
+                method: 'GET',
+                dataType: "json",
+                contentType: "application/json",
+                success: function(res) {
+                    uploadFile(res.id);
+                    console.log(res);
+                    $('#addFilmForm')[0].reset();
+                }
+            })
+        }
+
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse(window.atob(base64));
+        }
+
+    </script>
+
+</body>
+
+</html>

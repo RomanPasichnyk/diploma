@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema</title>
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="public/css/navbar_footer.css" rel="stylesheet">
+    <link href="public/css/films.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a href="#" class="navbar-brand">Cinema | Admin</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="films.html" class="nav-link">Cinema</a>
+                </li>
+                <li class="nav-item ">
+                    <a href="editFilms.html" class="nav-link">Films</a>
+                </li>
+                <li class="nav-item active">
+                    <a href="editSessions.html" class="nav-link">Sessions</a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+
+
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-4 well well-sm mx-auto">
+                    <legend><a href="http://www.jquery2dotnet.com"><i class="glyphicon glyphicon-globe"></i></a> Add Session</legend><br>
+                    <form action="#" method="post" class="form" role="form" id="addSessionForm">
+
+                        <div>
+                            <label>Film Name</label>
+                            <select class="form-control" id="filmName">
+                            </select>
+                            <br>
+                            <label>Date</label>
+                            <input class="form-control" id="date" type="date" /><br>
+                            <label>Time</label>
+                            <input class="form-control" id="time" type="time" /><br>
+                            <label>Cinema name</label>
+                            <select class="form-control" id="nameCinema">
+                                <option value="Lviv Film Center">Lviv Film Center (Волод. Великого 18)</option>
+                                <option value="Cinema Copernyk">Кінопалац "Коперник" (Коперника 9)</option>
+                                <option value="Multiplex">Мультіплекс «Victoria Gardens» (Кульпарківська 226а)</option>
+                                <option value="King Cross">Планета кіно (King Cross) (Стрийська 30)</option>
+                                <option value="Cinema Teatralna">Кінопалац (Театральна 22)</option>
+                                <option value="Cinema Dovzhenka">Кінопалац ім. Довженка (Червоної Калини 81)</option>
+                                <option value="Forum">Планета кіно (Forum Lviv) (Під Дубом 7Б)</option>
+                            </select>
+                            <br>
+                            <label>Link session</label>
+                            <input class="form-control" id="linkSession" type="text" /><br>
+                        </div>
+
+                        <br>
+                        <br>
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">
+                            Add Session</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!--footer starts from here-->
+    <footer class="footer">
+        <div class="container">
+            <ul class="foote_bottom_ul_amrc">
+                <br>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="http://kalarikendramdelhi.com">About</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Services</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Pricing</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Blog</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Contact</a></li>
+            </ul>
+            <!--foote_bottom_ul_amrc ends here-->
+            <p class="text-center">Copyright @2018 | Designed With by <a href="#">Roman Pasichnyk</a></p>
+
+            <ul class="social_footer_ul">
+                <li><a href="http://facebook.com"><i class="fa fa-facebook-f"></i></a></li>
+                <li><a href="http://twitter.com"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="http://linkedin.com"><i class="fa fa-linkedin"></i></a></li>
+                <li><a href="http://instagram.com"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+
+
+    <script src=public/js/jquery.min.js> </script> <script src="public/js/bootstrap.min.js"></script>
+
+    <script>
+        let serverURL = 'http://localhost:8080/';
+        $(document).ready(function() {
+
+            let token = window.localStorage.getItem('auth_token');
+            if (token) {
+
+                $.ajaxSetup({
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+
+                getFilms();
+
+                $("#addSessionForm").submit(function(e) {
+                    e.preventDefault();
+                    addSession();
+                });
+
+            } else {
+                window.location.href = "signIn.html";
+            }
+
+        });
+
+        function addSession() {
+            let filmId = $("#filmName").val();
+            let date = $("#date").val();
+            let time = $("#time").val();
+            let nameCinema = $("#nameCinema").val();
+            let linkSession = $("#linkSession").val();
+
+
+            let session = {
+                film: {
+                    id: filmId
+                },
+                nameCinema: nameCinema,
+                date: date,
+                time: time,
+                linkSession: linkSession
+            };
+            console.log(session);
+
+            $.ajax({
+                url: serverURL + "sessions",
+                method: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(session),
+                complete: function(data) {
+                    if (data.status == 201) {
+                        alert('session added');
+                    }
+                }
+            })
+        }
+
+
+        function getFilms() {
+            $.ajax({
+                url: serverURL + "films",
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                    $.each(response, function(key, value) {
+                        $('#filmName').append(
+                            `
+                            <option value = ${value.id}>${value.filmName}</option>
+                        `
+                        );
+                    });
+                }
+            });
+        };
+
+
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse(window.atob(base64));
+        }
+
+    </script>
+
+</body>
+
+</html>

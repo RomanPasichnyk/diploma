@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="icon.jpg">
+    <title>Cinema</title>
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="public/css/navbar_footer.css" rel="stylesheet">
+    <link href="public/css/films.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a href="#" class="navbar-brand">Cinema</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+            <ul class="navbar-nav mr-auto" id="head">
+                <li class="nav-item active">
+                    <a href="films.html" class="nav-link">Films</a>
+                </li>
+                <li class="nav-item">
+                    <a href="sessions.html" class="nav-link">Sessions</a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Contact Us</a>
+                </li>
+            </ul>
+
+            <form class="form-inline my-2 my-lg-0">
+                <ul class="navbar-nav my-2 my-sm-0">
+                   <li class="nav-item" id="profileBtn">
+                        
+                        
+                    </li>
+                    <li class="nav-item">
+                        <a href="signIn.html" class="nav-link" id="logoutBtn">Log Out</a>
+                    </li>
+                    
+                </ul>
+            </form>
+        </div>
+
+
+
+    </nav>
+
+
+    <section>
+        <div class="container">
+            <div class="row" id="films">
+                <h1 class="text-center"><span>Films</span></h1>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!--footer starts from here-->
+    <footer class="footer">
+        <div class="container">
+            <ul class="foote_bottom_ul_amrc">
+                <br>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="http://kalarikendramdelhi.com">About</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Services</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Pricing</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Blog</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Contact</a></li>
+            </ul>
+
+            <p class="text-center">Copyright @2018 | Designed With by <a href="#">Roman Pasichnyk</a></p>
+
+            <ul class="social_footer_ul">
+                <li><a href="http://facebook.com"><i class="fa fa-facebook-f"></i></a></li>
+                <li><a href="http://twitter.com"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="http://linkedin.com"><i class="fa fa-linkedin"></i></a></li>
+                <li><a href="http://instagram.com"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+
+
+    <script src=public/js/jquery.min.js> </script> <script src="public/js/bootstrap.min.js"></script>
+
+    <script>
+        let serverURL = 'http://localhost:8080/';
+        $(document).ready(function() {
+            let token = window.localStorage.getItem('auth_token');
+            if (token) {
+                let userEmail = parseJwt(token).sub;
+                let role = parseJwt(token).auth;
+                if (role === 'ROLE_ADMIN') {
+                    $('#head').append(
+                        `
+                        <li class="nav-item active">
+                            <a href="editFilms.html" class="nav-link">AdminPanel</a>
+                        </li>
+                        `
+                    )
+                };
+                $.ajaxSetup({
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                
+                getUserByEmail(userEmail);
+                getFilms();
+
+                $('#logoutBtn').on('click', function(e) {
+                    window.localStorage.removeItem('auth_token');
+                    window.location.reload();
+                });
+            } else {
+                window.location.href = "signIn.html";
+            }
+
+        });
+
+        function getFilms() {
+            let imgUrl = serverURL + 'films/image/';
+            $.ajax({
+                url: serverURL + "films",
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                    $.each(response, function(key, value) {
+                        $('#films').append(
+                            `
+                            <div class="col-md-4 mt-4">
+                                <div class="card profile-card-5">
+                                    <div class="card-img-block">
+                                    <td>
+                                        <img class="card-img-top" src="${value.image !== null ? (imgUrl + value.id) : ''}" width="150px" alt="Film image">
+                                    </td>
+                                    </div>
+                                    <div class="card-body pt-0">
+                                        <h5 class="card-title">${value.filmName}</h5>
+                                        <p class="card-text">Genre: ${value.genre}<br>
+                                        Duration: ${value.duration}<br>
+                                        End Rental: ${value.endRental}</p>
+
+                                        <a href="film.html?id=${value.id}" class="btn btn-primary">More details</a>
+
+                                    </div>
+                        `
+                        )
+                    });
+                }
+            });
+        }
+        
+        function getUserByEmail(userEmail) {
+            
+            $.ajax({
+                url: serverURL + "users/find?email=" + userEmail,
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    $('#profileBtn').append(
+                    `
+                        <a href="profile.html?id=${response.id}" class="nav-link" id="profileBtn">Profile</a>
+                    `)
+
+                }
+            })
+        }
+
+
+
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse(window.atob(base64));
+        }
+
+    </script>
+
+</body>
+
+
+</html>

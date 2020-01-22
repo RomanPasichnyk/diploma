@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema</title>
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="public/css/navbar_footer.css" rel="stylesheet">
+    <link href="public/css/films.css" rel="stylesheet">
+    <link href="public/css/comment.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a href="#" class="navbar-brand">Cinema</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+            <ul class="navbar-nav mr-auto" id="head">
+                <li class="nav-item active">
+                    <a href="films.html" class="nav-link">Films</a>
+                </li>
+                <li class="nav-item">
+                    <a href="sessions.html" class="nav-link">Sessions</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Contact Us</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <ul class="navbar-nav my-2 my-sm-0">
+
+                    <li class="nav-item" id="profileBtn">
+
+
+                    </li>
+                    <li class="nav-item">
+                        <a href="signIn.html" class="nav-link" id="logoutBtn">Log Out</a>
+                    </li>
+                </ul>
+            </form>
+
+        </div>
+    </nav>
+
+
+    <section>
+        <div class="container">
+
+            <form class="form" id="filmForm">
+
+            </form>
+            <br>
+            <form class="form" id="sessionForm">
+
+            </form>
+
+
+            <div class="container">
+                <div class="row">
+                    <div class="embed-responsive embed-responsive-2by9 mb-4">
+                        <div class="widget-area no-padding blank">
+                            <div class="status-upload">
+                                <form>
+                                    <textarea placeholder="Write your comment" id="comment"></textarea>
+                                    <button type="submit" class="btn btn-success green" id="shareButton"><i class="fa fa-share"></i> Share</button>
+                                </form>
+                            </div><!-- Status Upload  -->
+                        </div><!-- Widget Area -->
+                    </div>
+                </div>
+            </div>
+
+            <div class='container' id="commentToFilm">
+
+
+
+            </div>
+
+
+        </div>
+    </section>
+
+
+    <!--footer starts from here-->
+    <footer class="footer">
+        <div class="container">
+            <ul class="foote_bottom_ul_amrc">
+                <br>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="http://kalarikendramdelhi.com">About</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Services</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Pricing</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Blog</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Contact</a></li>
+            </ul>
+            <!--foote_bottom_ul_amrc ends here-->
+            <p class="text-center">Copyright @2018 | Designed With by <a href="#">Roman Pasichnyk</a></p>
+
+            <ul class="social_footer_ul">
+                <li><a href="http://facebook.com"><i class="fa fa-facebook-f"></i></a></li>
+                <li><a href="http://twitter.com"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="http://linkedin.com"><i class="fa fa-linkedin"></i></a></li>
+                <li><a href="http://instagram.com"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+
+
+    <script src=public/js/jquery.min.js> </script> <script src="public/js/bootstrap.min.js"></script>
+
+    <script>
+        let serverURL = 'http://localhost:8080/';
+        $(document).ready(function() {
+            let token = window.localStorage.getItem('auth_token');
+            let userEmail = parseJwt(token).sub;
+            if (token) {
+                let role = parseJwt(token).auth;
+                if (role === 'ROLE_ADMIN') {
+                    $('#head').append(
+                        `
+                        <li class="nav-item active">
+                            <a href="editFilms.html" class="nav-link">AdminPanel</a>
+                        </li>
+                        `
+                    )
+                };
+                $.ajaxSetup({
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                getFilm();
+                getAllComments();
+                getUserByEmailForProfile(userEmail);
+                getSessionByFilmIdAndDateAndNameCinema();
+
+                console.log(window.location.search);
+
+                $('#logoutBtn').on('click', function(e) {
+                    window.localStorage.removeItem('auth_token');
+                    window.location.reload();
+                });
+
+                $('#shareButton').on('click', function(e) {
+                    e.preventDefault();
+                    getUserByEmail(userEmail);
+
+                });
+
+
+
+            } else {
+                window.location.href = "signIn.html";
+            }
+        });
+
+        function getAllComments() {
+            let filmId = window.location.search.replace('?id=', '');
+            $.ajax({
+                url: serverURL + "comments/" + filmId,
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                    $.each(response, function(key, value) {
+                        $('#commentToFilm').append(
+                            `
+                            <div class="media comment-box">
+                                <div class="media-left">
+                                    <a href="profile.html?id=${value.user.id}">
+                                        <img class="img-responsive user-photo" src="https://ssl.gstatic.com/accounts/ui/avatar_2x.png">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <h4 class="media-heading">${value.user.name} </h4> 
+                                    ${value.commentsDate}
+                                    ${value.commentsTime}
+                                    <p>${value.comment}</p>
+                                </div>
+                            </div>
+                        `
+                        )
+                    });
+                }
+            });
+
+
+        }
+
+        function addComment(userId) {
+            let commentText = $("#comment").val();
+            let filmId = window.location.search.replace('?id=', '');
+
+            let comments = {
+                comment: commentText,
+                film: {
+                    id: filmId
+                },
+                user: {
+                    id: userId
+                }
+            };
+            console.log(comments);
+
+            $.ajax({
+                url: serverURL + "comments",
+                method: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(comments),
+                complete: function(data) {
+                    if (data.status == 201) {
+                        alert('comment added');
+                    }
+                }
+            })
+
+        }
+
+        function getUserByEmail(userEmail) {
+            let userIdTest = 0;
+            $.ajax({
+                url: serverURL + "users/find?email=" + userEmail,
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    addComment(response.id);
+
+                }
+            })
+        }
+
+        function getUserByEmailForProfile(userEmail) {
+
+            $.ajax({
+                url: serverURL + "users/find?email=" + userEmail,
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    $('#profileBtn').append(
+                        `
+                        <a href="profile.html?id=${response.id}" class="nav-link" id="profileBtn">Profile</a>
+                    `)
+
+                }
+            })
+        }
+
+        function getSessionByFilmIdAndDateAndNameCinema() {
+            let filmId = window.location.search.replace('?id=', '');
+            var arr = ["Lviv Film Center", "Cinema Copernyk", "Multiplex", "King Cross", "Cinema Teatralna", "Cinema Dovzhenka", "Forum"];
+
+            for (i = 0; i <= arr.length; i++) {
+                $.ajax({
+                    url: serverURL + "sessions/searchByAll?filmId=" + filmId + "&date=now&nameCinema=" + arr[i],
+                    method: "GET",
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function(response) {
+                        console.log(response);
+                        j = 0;
+                        var session = [];
+                        $.each(response, function(key, value) {
+                            session[j] = value;
+                            j = j + 1;
+                        })
+                        if (j != 0) {
+
+                            $('#sessionForm').append(
+                                `
+                            <div class="row">
+                                <div class="col-sm-15 col-md-10 col-25">
+                                    <label style="font-weight:bold;">${session[0].nameCinema} - ${session[0].date}</label>
+                                </div>
+                                <div class="col-md-8 col-6">
+                                `)
+
+                            for (k = 0; k < session.length; k++) {
+
+                                $('#sessionForm').append(
+                                    `
+                                    <a href="${session[k].linkSession}">[${k+1}] - ${session[k].time}</a>
+                        `
+                                )
+                            }
+                            $('#sessionForm').append(
+                                ` 
+                                </div>
+                            </div>
+                            <hr />
+                            `
+                            )
+                        }
+                        console.log(session);
+                    }
+                })
+            }
+        }
+
+        function getFilm() {
+            let imgUrl = serverURL + 'films/image/';
+            $.ajax({
+                url: serverURL + "films/search" + window.location.search,
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                    $('#filmForm').append(
+                        `
+                            <h1 class="text-center"><span>${response.filmName}</span></h1>
+
+                            <div class="embed-responsive embed-responsive-16by9 mb-4">
+                                <iframe class="embed-responsive-item" src="${response.linkTrailer}" allowfullscreen></iframe>
+                            </div>
+                                
+                            <div class="row">
+                                <div class="col-sm-3 col-md-2 col-5">
+                                    <label style="font-weight:bold;">Film name</label>
+                                </div>
+                                <div class="col-md-8 col-6">
+                                    ${response.filmName}
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-3 col-md-2 col-5">
+                                    <label style="font-weight:bold;">Original film name</label>
+                                </div>
+                                <div class="col-md-8 col-6">
+                                    ${response.originalName}
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-3 col-md-2 col-5">
+                                    <label style="font-weight:bold;">Language</label>
+                                </div>
+                                <div class="col-md-8 col-6">
+                                    ${response.language}
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-3 col-md-2 col-5">
+                                    <label style="font-weight:bold;">Genre</label>
+                                </div>
+                                <div class="col-md-8 col-6">
+                                    ${response.genre}
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-3 col-md-2 col-5">
+                                    <label style="font-weight:bold;">Duration</label>
+                                </div>
+                                <div class="col-md-8 col-6">
+                                    ${response.duration}
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-3 col-md-2 col-5">
+                                    <label style="font-weight:bold;">Release film</label>
+                                </div>
+                                <div class="col-md-8 col-6">
+                                    ${response.releaseFilm}
+                                </div>
+                            </div>
+
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-3 col-md-2 col-5">
+                                    <label style="font-weight:bold;">Start rental</label>
+                                </div>
+                                <div class="col-md-8 col-6">
+                                    ${response.startRental}
+                                </div>
+                            </div>  
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-3 col-md-2 col-5">
+                                    <label style="font-weight:bold;">End rental</label>
+                                </div>
+                                <div class="col-md-8 col-6">
+                                    ${response.endRental}
+                                </div>
+                            </div>
+                            <hr />
+                        `
+                    )
+
+                }
+            });
+        }
+
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse(window.atob(base64));
+        }
+
+    </script>
+
+</body>
+
+</html>

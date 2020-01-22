@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema</title>
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="public/css/navbar_footer.css" rel="stylesheet">
+    <link href="public/css/films.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a href="#" class="navbar-brand">Cinema</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+            <ul class="navbar-nav mr-auto" id="head">
+                <li class="nav-item">
+                    <a href="films.html" class="nav-link">Films</a>
+                </li>
+                <li class="nav-item">
+                    <a href="sessions.html" class="nav-link">Sessions</a>
+                </li>
+                <li class="nav-item">
+                    <a href="contactUs.html" class="nav-link">Contact Us</a>
+                </li>
+            </ul>
+
+            <form class="form-inline my-2 my-lg-0">
+                <ul class="navbar-nav my-2 my-sm-0">
+                    <li class="nav-item active">
+                        <a href="reg.html" class="nav-link">Sign Up</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="signIn.html" class="nav-link">Sign In</a>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </nav>
+
+    <!--    Sign up form-->
+
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-4 well well-sm mx-auto">
+                    <legend><a href="http://www.jquery2dotnet.com"><i class="glyphicon glyphicon-globe"></i></a> Sign up!</legend><br>
+                    <form action="#" method="post" class="form" role="form" id="signUpForm">
+                        <label id="error" style="color:red"></label>
+                        <input class="form-control" id="userEmail" placeholder="Your Email" type="email" /><br>
+                        <input class="form-control" id="userPassword" placeholder="New Password" type="password" /><br>
+                        <input class="form-control" id="userConfirmPassword" placeholder="Re-enter Password" type="password" /><br>
+                        <input class="form-control" id="userName" placeholder="Your Name" type="text" /><br>
+                        <input class="form-control" id="userAge" placeholder="Your Age" type="number" /><br>
+                        <input class="form-control" id="userPhoneNumber" placeholder="Your Phone Number" type="text" /><br>
+
+                        <label for="">
+                            Birth Date</label>
+                        <div class="row mx-auto">
+
+                            <div class="col-xs-6 col-md-6">
+                                <select class="form-control" id="month">
+                                    <option value=01>January</option>
+                                    <option value=02>February</option>
+                                    <option value=03>March</option>
+                                    <option value=04>April</option>
+                                    <option value=05>May</option>
+                                    <option value=06>June</option>
+                                    <option value=07>July</option>
+                                    <option value=08>August</option>
+                                    <option value=09>September</option>
+                                    <option value=10>October</option>
+                                    <option value=11>November</option>
+                                    <option value=12>December</option>
+                                </select>
+                            </div>
+                            <div class="col-xs-6 col-md-6">
+                                <select class="form-control" id="day">
+                                    <option value=01>01</option>
+                                    <option value=02>02</option>
+                                    <option value=03>03</option>
+                                    <option value=04>04</option>
+                                    <option value=05>05</option>
+                                    <option value=06>06</option>
+                                    <option value=07>07</option>
+                                    <option value=08>08</option>
+                                    <option value=09>09</option>
+                                    <option value=10>10</option>
+                                    <option value=11>11</option>
+                                    <option value=12>12</option>
+                                    <option value=13>13</option>
+                                    <option value=14>14</option>
+                                    <option value=15>15</option>
+                                    <option value=16>16</option>
+                                    <option value=17>17</option>
+                                    <option value=18>18</option>
+                                    <option value=19>19</option>
+                                    <option value=20>20</option>
+                                    <option value=21>21</option>
+                                    <option value=22>22</option>
+                                    <option value=23>23</option>
+                                    <option value=24>24</option>
+                                    <option value=25>25</option>
+                                    <option value=26>26</option>
+                                    <option value=27>27</option>
+                                    <option value=28>28</option>
+                                    <option value=29>29</option>
+                                    <option value=30>30</option>
+                                    <option value=31>31</option>
+                                </select>
+                            </div>
+                        </div><br>
+                        <label>Gender</label>
+                        <br>
+                        <label class="radio-inline">
+                            <input type="radio" id="gender" value="MALE" name="cc" />
+                            Male
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" id="gender" value="FEMALE" name="cc" />
+                            Female
+                        </label>
+                        <br><br>
+                        <label>Favorite genre</label>
+                        <div>
+                            <select class="form-control" id="userFavoriteGenre">
+                                <option value="COMEDY">Comedy</option>
+                                <option value="HORROR">Horror</option>
+                                <option value="ROMANCE">Romance</option>
+                                <option value="ACTION">Action</option>
+                                <option value="THRILLER">Thriller</option>
+                                <option value="DRAMA">Drama</option>
+                                <option value="MYSTERY">Mystery</option>
+                                <option value="CRIME">Crime</option>
+                                <option value="ANIMATION">Animation</option>
+                                <option value="ADVENTURE">Adventure</option>
+                                <option value="FANTASY">Fantasy</option>
+                                <option value="COMEDYROMANCE">Comedy-Romance</option>
+                                <option value="ACTIONCOMEDY">Action-Comedy</option>
+                                <option value="SUPERHERO">Superhero</option>
+                            </select>
+                        </div>
+
+
+                        <br>
+                        <br>
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">
+                            Sign up</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <br>
+    <!--footer starts from here-->
+    <footer class="footer">
+        <div class="container">
+            <ul class="foote_bottom_ul_amrc">
+                <br>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="http://kalarikendramdelhi.com">About</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Services</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Pricing</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Blog</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Contact</a></li>
+            </ul>
+            <!--foote_bottom_ul_amrc ends here-->
+            <p class="text-center">Copyright @2018 | Designed With by <a href="#">Roman Pasichnyk</a></p>
+
+            <ul class="social_footer_ul">
+                <li><a href="http://facebook.com"><i class="fa fa-facebook-f"></i></a></li>
+                <li><a href="http://twitter.com"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="http://linkedin.com"><i class="fa fa-linkedin"></i></a></li>
+                <li><a href="http://instagram.com"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src=public/js/jquery.min.js> </script> <script src="public/js/bootstrap.min.js"></script>
+
+    <script>
+        let serverURL = "http://localhost:8080/";
+        $(document).ready(function() {
+
+            let token = window.localStorage.getItem('auth_token');
+            if (!token) {
+
+                $("#signUpForm").submit(function(e) {
+                    e.preventDefault();
+
+                    addUser();
+                });
+            } else {
+                window.location.href = "films.html";
+            }
+            
+
+        })
+
+        function addUser() {
+            let userEmail = $("#userEmail").val();
+            let userPassword = $("#userPassword").val();
+            let userConfirmPassword = $("#userConfirmPassword").val();
+            let userName = $("#userName").val();
+            let userAge = $("#userAge").val();
+            let userPhoneNumber = $("#userPhoneNumber").val();
+            console.log($("#month").val());
+            let userBirthDay = ["2018", $("#month").val(), $("#day").val()];
+
+            let userGender = $('input[name=cc]:checked').val();
+            console.log($('input[name=cc]:checked').val());
+
+            let userFavoriteGenre = $("#userFavoriteGenre").val();
+
+            let user = {
+                email: userEmail,
+                password: userPassword,
+                confirmPassword: userConfirmPassword,
+                name: userName,
+                age: userAge,
+                phoneNumber: userPhoneNumber,
+                favoriteGenre: userFavoriteGenre,
+                birthDate: "" + userBirthDay[0] + "-" + userBirthDay[1] + "-" + userBirthDay[2],
+                gender: userGender
+            };
+            console.log(user);
+
+            $.ajax({
+                url: serverURL + "auth/signup",
+                method: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(user),
+                complete: function(data) {
+                    if (data.status == 201) {
+                        window.location.href = "signIn.html";
+                    } else {
+                        $("#error").empty();
+                        $('#error').append(
+                            `
+                            ${data.responseJSON.message}
+                        `
+                        )
+                        console.log(data);
+                        console.log(data.responseJSON.message);
+                    }
+                }
+            })
+        }
+
+    </script>
+</body>
+
+</html>

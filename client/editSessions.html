@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema</title>
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="public/css/navbar_footer.css" rel="stylesheet">
+    <link href="public/css/films.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a href="#" class="navbar-brand">Cinema | Admin</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="films.html" class="nav-link">Cinema</a>
+                </li>
+                <li class="nav-item">
+                    <a href="editFilms.html" class="nav-link">Films</a>
+                </li>
+                <li class="nav-item active">
+                    <a href="editSessions.html" class="nav-link">Sessions</a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+
+
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-5 well well-sm mx-auto">
+                    <h1 class="text-center"><span>Sessions editor</span></h1>
+                    <legend><a href="http://www.jquery2dotnet.com"><i class="glyphicon glyphicon-globe"></i></a>Choose session</legend><br>
+                    <form action="#" method="get" class="form" role="form" id="sessionForm">
+
+                        <div>
+                            <select class="form-control" id="filmName">
+                            </select>
+                            <select class="form-control" id="filmDate">
+                            </select>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="row" id="sessions">
+
+                <a href="addSession.html"><button class="btn btn-success" id="btn-add">Add Session</button></a>
+
+                <table class="table table-striped" id="sessionTable">
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Film Name</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!--footer starts from here-->
+    <footer class="footer">
+        <div class="container">
+            <ul class="foote_bottom_ul_amrc">
+                <br>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="http://kalarikendramdelhi.com">About</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Services</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Pricing</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Blog</a></li>
+                <li><a href="http://kalarikendramdelhi.com">Contact</a></li>
+            </ul>
+            <!--foote_bottom_ul_amrc ends here-->
+            <p class="text-center">Copyright @2018 | Designed With by <a href="#">Roman Pasichnyk</a></p>
+
+            <ul class="social_footer_ul">
+                <li><a href="http://facebook.com"><i class="fa fa-facebook-f"></i></a></li>
+                <li><a href="http://twitter.com"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="http://linkedin.com"><i class="fa fa-linkedin"></i></a></li>
+                <li><a href="http://instagram.com"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+
+
+    <script src=public/js/jquery.min.js> </script> <script src="public/js/bootstrap.min.js"></script>
+
+    <script>
+        let serverURL = 'http://localhost:8080/';
+        $(document).ready(function() {
+
+            let token = window.localStorage.getItem('auth_token');
+            if (token) {
+
+                $.ajaxSetup({
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+
+                let role = parseJwt(token).auth;
+
+                if (role === 'ROLE_USER') {
+                    window.location.href = "signIn.html";
+                };
+
+
+                getFilms();
+                let filmId;
+                $("#filmName").change(function(e) {
+                    $('#filmDate').empty();
+                    setTimeout('filmId = $("#filmName").val()', 100);
+                    setTimeout('console.log(filmId)', 100);
+                    setTimeout('getSessionDateByFilmId(filmId)', 200);
+
+                });
+
+                $("#filmDate").change(function(e) {
+                    $('#sessionTable tbody').empty();
+                    console.log($("#filmDate").val());
+                    setTimeout('getSessionDateByFilmIdAndDate(filmId, $("#filmDate").val())', 100);
+                });
+                
+                
+
+                $(document).on('click', '#sessionTable tbody button', function(e) {
+                    console.log(e.target.id);
+                    
+                    let sessionId = e.target.id.split('-')[2];
+                    console.log(sessionId);
+                    var r = confirm("Ви дійсно хочете видалити цей запис?");
+                    if (r == true) {
+                        console.log("YES");
+                        deleteSession(sessionId);
+                    }
+                });
+
+            } else {
+                window.location.href = "signIn.html";
+            }
+
+        });
+        
+        function deleteSession(sessionId) {
+            $.ajax({
+                url: serverURL + 'sessions/' + sessionId,
+                method: 'DELETE',
+                dataType: 'json',
+                contentType: 'application/json',
+                complete: function(res) {
+                    if (res.status == 200) {
+                        $('#sessionTable tbody').empty();
+                        setTimeout('getSessionDateByFilmIdAndDate(filmId, $("#filmDate").val())', 100);
+                    }
+                }
+            })
+        }
+
+        function getFilms() {
+            $.ajax({
+                url: serverURL + "films",
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                    $.each(response, function(key, value) {
+                        $('#filmName').append(
+                            `
+                            <option value = ${value.id}>${value.filmName}</option>
+                        `
+                        );
+                    });
+                }
+            });
+        };
+
+        function getSessionDateByFilmId(id) {
+            $.ajax({
+                url: serverURL + "sessions/search/" + id,
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                    $.each(response, function(key, value) {
+                        let normDate = value[0] + "." + value[1] + "." + value[2];
+                        $('#filmDate').append(
+                            `
+                                <option value = ${value}>${normDate}</option>
+                            `
+                        );
+                    });
+                }
+            });
+        }
+
+        function getSessionDateByFilmIdAndDate(id, date) {
+            $.ajax({
+                url: serverURL + "sessions/searchtime/" + id + "?date=" + date,
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                    $.each(response, function(key, value) {
+                        let normTime = value.time[0] + ":" + value.time[1];
+                        $('#sessionTable tbody').append(
+                            `
+                            <tr>
+                                <td>${value.id}</td>
+                                <td>${value.film.filmName}</td>
+                                <td>${value.date}</td>
+                                <td>${value.time}</td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" id="btn-delete-${value.id}">Delete</button>
+                                </td>
+                            </tr>
+                        `
+                        );
+                    });
+                }
+            });
+        }
+
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse(window.atob(base64));
+        }
+
+    </script>
+
+</body>
+
+</html>
