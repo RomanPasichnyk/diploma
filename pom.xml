@@ -3,25 +3,31 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ua.logos</groupId>
-    <artifactId>cinema</artifactId>
+    <groupId>ua.keeper</groupId>
+    <artifactId>Cinema</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>cinema</name>
-    <description>Demo project for Spring Boot</description>
+    <name>Cinema</name>
+    <description>Cinema Project</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.6.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>2.3.0.RELEASE</version>
+        <relativePath/>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
+
+        <spock.version>1.3-groovy-2.5</spock.version>
+        <easy-random.core.version>4.0.0</easy-random.core.version>
+        <modelmapper.version>2.3.7</modelmapper.version>
+        <jjwt.version>0.9.1</jjwt.version>
+        <validation.version>2.0.1.Final</validation.version>
     </properties>
 
     <dependencies>
@@ -52,7 +58,7 @@
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
-            <version>2.3.1</version>
+            <version>${modelmapper.version}</version>
         </dependency>
 
         <dependency>
@@ -63,10 +69,27 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
-            <version>0.9.1</version>
+            <version>${jjwt.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-spring</artifactId>
+            <version>${spock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jeasy</groupId>
+            <artifactId>easy-random-core</artifactId>
+            <version>${easy-random.core.version}</version>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${validation.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

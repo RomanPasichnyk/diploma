@@ -14,7 +14,6 @@ import ua.logos.domain.SigninRequest;
 import ua.logos.domain.SigninResponse;
 import ua.logos.domain.UserDTO;
 import ua.logos.service.AuthService;
-
 import javax.validation.Valid;
 
 @RestController
